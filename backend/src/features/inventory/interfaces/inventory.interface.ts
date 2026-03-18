@@ -90,7 +90,7 @@ export interface InventorySalesTracking {
 export type InventoryItems = {
   inventoryId: string;
   supplier_products_id: string;
-  batch_inventory_id: string;
+  // batch_inventory_id: string;
   status: string;
   stock_quantity: Decimal;
   unit_id: string;

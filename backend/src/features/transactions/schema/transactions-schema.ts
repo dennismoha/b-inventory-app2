@@ -33,7 +33,7 @@ const cartProductSchema = Joi.object().keys({
   price: Joi.number().precision(2).min(0).required(), // `price` (positive number with 2 decimals)
   VAT: Joi.number().precision(2).min(0).required(), // `VAT` (non-negative number with 2 decimals)
   discount: Joi.number().precision(2).min(0).required(), // `discount` (non-negative number with 2 decimals)
-  batch_inventory_id: Joi.string().uuid().required(),
+  // batch_inventory_id: Joi.string().uuid().required(),
   // transactionId: Joi.string().uuid().required(),  // `transactionId` as UUID (required)
   status: Joi.string().allow(null),
   stock_quantity: Joi.number().min(0).required(), // `stock_quantity` (non-negative number)

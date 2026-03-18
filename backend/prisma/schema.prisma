@@ -250,7 +250,7 @@ model OrderProducts {
 model Inventory {
   inventoryId          String          @id @default(uuid())
   supplier_products_id String          @unique @db.Uuid
-  batch_inventory_id   String          @unique @db.Uuid
+  // batch_inventory_id   String          @unique @db.Uuid
   // productName           String
   // sku                   String
   // product_weight         Decimal                  @db.Decimal(8, 2)
@@ -271,7 +271,7 @@ model Inventory {
   Sales                  Sales[]
   // InventoryRestock       InventoryRestock[]
   InventorySalesTracking InventorySalesTracking[]
-  inventory              BatchInventory           @relation(fields: [batch_inventory_id], references: [batch_inventory_id])
+  // inventory              BatchInventory           @relation(fields: [batch_inventory_id], references: [batch_inventory_id])
 
   // `last_restocked` is the timestamp when new stock was last added to the inventory. 
   // It is updated whenever stock_quantity is restocked, e.g., when new products are received from the supplier.
@@ -280,7 +280,7 @@ model Inventory {
   // This field will be updated on any modification of the inventory item, 
   // including when stock levels are adjusted (due to sales, stock adjustments, etc.), 
   // price updates, or status changes.
-  @@unique([batch_inventory_id, status])
+  // @@unique([batch_inventory_id, status])
 }
 
 model InventoryLog {
@@ -633,7 +633,7 @@ model BatchInventory {
   // batch              Batch    @relation(fields: [batch_id], references: [batch_id])
   purchase Purchase @relation(fields: [purchase_id], references: [purchase_id], onDelete: Cascade)
 
-  BatchInventory Inventory[]
+  // BatchInventory Inventory[]
   BatchLifeCycle BatchLifecycle[]
 
   @@map("BatchInventory")

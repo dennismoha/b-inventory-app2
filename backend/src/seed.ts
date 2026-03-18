@@ -34,6 +34,16 @@ async function main() {
     }
   });
 
+    const category4 = await prisma.categories.upsert({
+    where: { category_slug: 'chicks' },
+    update: {},
+    create: {
+      category_slug: 'chicks',
+      category_name: 'Chicks',
+      description: 'chicks products for chicks.'
+    }
+  });
+
   // Create subcategories within each category
   const subcategory1 = await prisma.subCategories.upsert({
     where: { subcategory_name: 'Cattle Feed' },
@@ -88,6 +98,25 @@ async function main() {
       description: 'Nutrient-rich food for cats, including both dry and wet options.'
     }
   });
+
+  const subcategory7 = await prisma.subCategories.upsert({
+    where: { subcategory_name: 'layers' },
+    update: {},
+    create: {
+      subcategory_name: 'layers',
+      description: 'Nutritional feed for chicken layers to support growth and reproduction.'
+    }
+  });
+
+    const subcategory8 = await prisma.subCategories.upsert({
+    where: { subcategory_name: 'broilers' },
+    update: {},
+    create: {
+      subcategory_name: 'Broiler',
+      description: 'Nutritional feed for broiler chickens to support growth and reproduction.'
+    }
+  });
+
 
   // Create CategorySubCategory relationships (Many-to-Many)
   await prisma.categorySubCategory.upsert({
@@ -173,6 +202,35 @@ async function main() {
       subcategory_id: subcategory6.subcategory_id
     }
   });
+
+    await prisma.categorySubCategory.upsert({
+    where: {
+      category_id_subcategory_id: {
+        category_id: category4.categoryId,
+        subcategory_id: subcategory7.subcategory_id
+      }
+    },
+    update: {},
+    create: {
+      category_id: category4.categoryId,
+      subcategory_id: subcategory7.subcategory_id
+    }
+  });
+
+      await prisma.categorySubCategory.upsert({
+    where: {
+      category_id_subcategory_id: {
+        category_id: category4.categoryId,
+        subcategory_id: subcategory8.subcategory_id
+      }
+    },
+    update: {},
+    create: {
+      category_id: category4.categoryId,
+      subcategory_id: subcategory8.subcategory_id
+    }
+  });
+
 
   // Create units
   const unitKg = await prisma.units.upsert({

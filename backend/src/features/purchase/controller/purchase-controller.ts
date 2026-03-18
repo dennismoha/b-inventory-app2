@@ -160,6 +160,7 @@ export class PurchaseController {
       }
     });
 
+
     console.log('purchase is ', purchase);
 
     // Post-create utilities
@@ -382,7 +383,7 @@ export class PurchaseController {
   }
 
   private static async createBatchInventory(purchase: CreatePurchaseRequest & { purchase_id: string }, tx: PrismaTransactionalClient) {
-    await tx.batchInventory.create({
+    const batchInventory = await tx.batchInventory.create({
       data: {
         batch_name: purchase.batch,
         supplier_products_id: purchase.supplier_products_id,
@@ -413,6 +414,67 @@ export class PurchaseController {
         supplier_products_id: purchase.supplier_products_id
       }
     });
+
+    // in the inventory select all where supplier product id is the same as purchase.supplierproductsid
+
+    // const supplierProdouctsId = await tx.supplierProducts.findUnique({
+    //   where: {
+    //     supplier_products_id: purchase.supplier_products_id
+    //   },
+    //   select: {
+    //     supplier_products_id: true,
+    //     product: true,
+    //     supplier: true
+    //   }
+    // });
+
+    // console.log('supplier product id is ', supplierProdouctsId ,' \n and purchase supplier product id is ', purchase.supplier_products_id);
+
+    // if(!supplierProdouctsId?.supplier_products_id){
+    //   console.log('creating inventory record for supplier product id ', purchase.supplier_products_id);
+    //   await tx.inventory.create({
+    //     data: {
+    //       supplier_products_id: purchase.supplier_products_id,
+    //       // batch_inventory_id: batchInventory.batch_inventory_id,
+    //       stock_quantity: purchase.quantity - purchase.damaged_units,
+    //       unit_id: purchase.unit_id,
+    //       status: 'ACTIVE'
+    //     }
+    //   });
+    // }else if(supplierProdouctsId.supplier_products_id === purchase.supplier_products_id){ 
+    //   console.log('updating inventory record for supplier product id ', purchase.supplier_products_id);
+    //   await tx.inventory.update({
+    //     where: { supplier_products_id: purchase.supplier_products_id },
+    //     data: {
+    //       // batch_inventory_id: batchInventory.batch_inventory_id,
+    //       stock_quantity: {
+    //         increment: purchase.quantity - purchase.damaged_units
+    //       },        
+    //       status: 'ACTIVE'  
+    //     }
+    //   });
+    // }
+
+    await tx.inventory.upsert({
+      where: { supplier_products_id: purchase.supplier_products_id },
+      create: {
+        supplier_products_id: purchase.supplier_products_id,
+        // batch_inventory_id: batchInventory.batch_inventory_id,
+        stock_quantity:
+          purchase.quantity - purchase.damaged_units
+        ,
+        unit_id: purchase.unit_id,
+        status: 'ACTIVE'
+      },
+      update: {
+        // batch_inventory_id: batchInventory.batch_inventory_id,
+        stock_quantity: {
+          increment: purchase.quantity - purchase.damaged_units
+        },
+        status: 'ACTIVE'
+      }
+    });
+
   }
 
   private static async logCashbookEntry(args: {

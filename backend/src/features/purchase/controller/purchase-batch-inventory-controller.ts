@@ -110,7 +110,7 @@ export class BatchInventoryController {
             supplierProduct: true
           }
         },
-        BatchInventory: true
+        // BatchInventory: true
       }
     });
 
@@ -135,10 +135,10 @@ export class BatchInventoryController {
             where: { batch_inventory_id: batchInventoryId },
             data: { status: 'INACTIVE' }
           }),
-          prisma.inventory.updateMany({
-            where: { batch_inventory_id: batchInventoryId },
-            data: { status: 'INACTIVE' }
-          })
+          // prisma.inventory.updateMany({
+          //   where: { batch_inventory_id: batchInventoryId },
+          //   data: { status: 'INACTIVE' }
+          // })
         ]);
 
         message = 'Batch inventory set to INACTIVE successfully';
@@ -168,10 +168,10 @@ export class BatchInventoryController {
               where: { batch_inventory_id: batchInventoryId },
               data: { status: 'ACTIVE' }
             }),
-            prisma.inventory.updateMany({
-              where: { batch_inventory_id: batchInventoryId },
-              data: { status: 'ACTIVE' }
-            })
+            // prisma.inventory.updateMany({
+            //   where: { batch_inventory_id: batchInventoryId },
+            //   data: { status: 'ACTIVE' }
+            // })
           ]);
           message = 'Batch inventory set to ACTIVE successfully';
         }
@@ -184,10 +184,10 @@ export class BatchInventoryController {
             where: { batch_inventory_id: batchInventoryId },
             data: { status: 'DISCONTINUED' }
           }),
-          prisma.inventory.updateMany({
-            where: { batch_inventory_id: batchInventoryId },
-            data: { status: 'DISCONTINUED' }
-          })
+          // prisma.inventory.updateMany({
+          //   where: { batch_inventory_id: batchInventoryId },
+          //   data: { status: 'DISCONTINUED' }
+          // })
         ]);
         message = 'Batch inventory and related inventory discontinued successfully';
 

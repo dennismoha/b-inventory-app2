@@ -122,7 +122,8 @@ export class TransactionsController {
           txProductsData.push({
             inventoryId: item.inventoryId,
             supplier_products_id: item.supplier_products_id,
-            BatchInventoryId: item.batch_inventory_id, // not batch-allocated
+            // BatchInventoryId: item.batch_inventory_id, // not batch-allocated
+            BatchInventoryId: '', // not batch-allocated  
             stock_quantity: item.stock_quantity,
             quantity: item.quantity,
             productName: item.productName,
@@ -135,7 +136,11 @@ export class TransactionsController {
           });
 
           const inventoryUpdates = await tx.inventory.findUnique({
-            where: { supplier_products_id: item.supplier_products_id, status: 'ACTIVE', batch_inventory_id: item.batch_inventory_id }
+            where: {
+              supplier_products_id: item.supplier_products_id,
+              //  status: 'ACTIVE',
+              //   batch_inventory_id: item.batch_inventory_id 
+            }
           });
 
           if (!inventoryUpdates) {
@@ -206,13 +211,13 @@ export class TransactionsController {
                 where: { supplier_products_id: item.supplier_products_id, status: 'ACTIVE' },
                 create: {
                   supplier_products_id: nextBatchItem.supplier_products_id,
-                  batch_inventory_id: nextBatchItem.batch_inventory_id,
+                  // batch_inventory_id: nextBatchItem.batch_inventory_id,
                   stock_quantity: nextBatchItem.total_units,
                   unit_id: nextBatchItem.purchase.unit_id,
                   status: 'ACTIVE'
                 },
                 update: {
-                  batch_inventory_id: nextBatchItem.batch_inventory_id,
+                  // batch_inventory_id: nextBatchItem.batch_inventory_id,
                   stock_quantity: nextBatchItem.total_units,
                   status: 'ACTIVE'
                 }
@@ -1201,7 +1206,7 @@ export class TransactionsController {
       where: {
         supplier_products_id: item.supplier_products_id,
         status: 'ACTIVE',
-        batch_inventory_id: item.batch_inventory_id
+        // batch_inventory_id: item.batch_inventory_id
       },
       data: { stock_quantity: 0 }
     });
@@ -1244,13 +1249,13 @@ export class TransactionsController {
         where: { supplier_products_id: item.supplier_products_id, status: 'ACTIVE' },
         create: {
           supplier_products_id: nextBatch.supplier_products_id,
-          batch_inventory_id: nextBatch.batch_inventory_id,
+          // batch_inventory_id: nextBatch.batch_inventory_id,
           stock_quantity: nextBatch.total_units,
           unit_id: nextBatch.purchase?.unit_id ?? null,
           status: 'ACTIVE'
         },
         update: {
-          batch_inventory_id: nextBatch.batch_inventory_id,
+          // batch_inventory_id: nextBatch.batch_inventory_id,
           stock_quantity: nextBatch.total_units,
           status: 'ACTIVE'
         }

@@ -18,7 +18,8 @@
     "migrate:dev": "cross-env ENV=dev && npx prisma migrate dev --name",
     "migrate:prod": "cross-env ENV=prod && npx prisma migrate deploy",
     "db:status": "cross-env ENV=dev &&  npx prisma migrate status",
-    "db:reset":"npx prisma migrate reset"
+    "db:reset":"npx prisma migrate reset",
+    "prisma:studio": "npx prisma studio"
   },
   "keywords": [],
   "author": "",

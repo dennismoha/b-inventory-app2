@@ -126,32 +126,32 @@ const InventoryManagement = () => {
         size: 200,
         enableEditing: false
       },
-      {
-        accessorKey: 'batch_inventory_id',
-        header: 'batch_inventory_id',
-        enableHiding: true,
-        size: 150,
-        muiEditTextFieldProps: {
-          required: true,
-          select: true,
-          children: batchInventory?.map((batch) => (
-            <MenuItem key={batch.batch} value={batch.batch}>
-              {batch.batch}- {`${batch.productName}`}
-            </MenuItem>
-          )),
-          error: !!validationErrors?.batch_name,
-          helperText: validationErrors?.batch_name,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              batch_name: undefined
-            })
-        },
-        Cell: ({ cell, row }) => {
-          const batchdata = batchInventory.find((batch) => batch.batchInventory === cell.getValue());
-          return <div>{batchdata ? `${batchdata.batch} ` : `${JSON.stringify(row)}`}</div>;
-        }
-      },
+      // {
+      //   accessorKey: 'batch_inventory_id',
+      //   header: 'batch_inventory_id',
+      //   enableHiding: true,
+      //   size: 150,
+      //   muiEditTextFieldProps: {
+      //     required: true,
+      //     select: true,
+      //     children: batchInventory?.map((batch) => (
+      //       <MenuItem key={batch.batch} value={batch.batch}>
+      //         {batch.batch}- {`${batch.productName}`}
+      //       </MenuItem>
+      //     )),
+      //     error: !!validationErrors?.batch_name,
+      //     helperText: validationErrors?.batch_name,
+      //     onFocus: () =>
+      //       setValidationErrors({
+      //         ...validationErrors,
+      //         batch_name: undefined
+      //       })
+      //   },
+      //   Cell: ({ cell, row }) => {
+      //     const batchdata = batchInventory.find((batch) => batch.batchInventory === cell.getValue());
+      //     return <div>{batchdata ? `${batchdata.batch} ` : `${JSON.stringify(row)}`}</div>;
+      //   }
+      // },
       // {
       //   accessorKey: 'supplier_products_id',
       //   header: 'product Name',

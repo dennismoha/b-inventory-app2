@@ -10,7 +10,7 @@ export type cartProducts = Pick<InventoryItem, 'inventoryId' | 'status' | 'stock
   supplier_products_id: string;
   stock_quantity: number;
   total_stock_quantity: number;
-  batch_inventory_id: string;
+  // batch_inventory_id: string;
   needsBatchLoad: boolean; // if quantity is greater than stock quantity but less than total_Stock_quantity then this is true
 };
 export interface ProductItems {
@@ -43,7 +43,7 @@ const checkoutSlice = createSlice({
         inventoryId,
         quantity,
         status,
-        batch_inventory_id,
+        // batch_inventory_id,
         stock_quantity,
         productName,
         price,
@@ -71,7 +71,7 @@ const checkoutSlice = createSlice({
         stock_quantity + total_stock_quantity
       );
 
-      console.log('string to number', typeof  Number(stock_quantity));
+      console.log('string to number', typeof Number(stock_quantity));
       // Find if the product already exists in the cartProducts
       const indexProductId = state.cartProducts.findIndex((item) => item.inventoryId === inventoryId);
       if (indexProductId >= 0) {
@@ -96,7 +96,7 @@ const checkoutSlice = createSlice({
           discount: Number(discount),
           supplier_products_id,
           total_stock_quantity: Number(total_stock_quantity),
-          batch_inventory_id,
+          // batch_inventory_id,
           needsBatchLoad: Number(quantity) >= Number(stock_quantity) && Number(quantity) <= Number(total_stock_quantity) ? true : false
         });
       }

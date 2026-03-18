@@ -10,7 +10,7 @@ import { joiValidation } from '@src/shared/globals/decorators/joi-validation-dec
 import { InventoryItems } from '@src/features/inventory/interfaces/inventory.interface'; // Inventory interface
 import {
   // BadRequestError,
-  ConflictError,
+  // ConflictError,
   NotFoundError
   //  NotFoundError
 } from '@src/shared/globals/helpers/error-handler';
@@ -39,7 +39,7 @@ export class InventoryController {
       select: {
         inventoryId: true,
         supplier_products_id: true,
-        batch_inventory_id: true,
+        // batch_inventory_id: true,
         supplierProduct: {
           select: {
             supplier: {
@@ -86,7 +86,8 @@ export class InventoryController {
     const newInventory: InventoryItems[] = inventory.map((inv) => ({
       inventoryId: inv.inventoryId,
       supplier_products_id: inv.supplier_products_id,
-      batch_inventory_id: inv.batch_inventory_id,
+      // batch_inventory_id: inv.batch_inventory_id,
+      batch_inventory_id: null,
       status: inv.status,
       stock_quantity: inv.stock_quantity,
       unit_id: inv.unit_id,
@@ -156,29 +157,29 @@ export class InventoryController {
       };
 
       // 3. Ensure no active inventory exists
-      const existing = await tx.inventory.findFirst({
-        where: {
-          batch_inventory_id: transformed.batch_inventory_id,
-          status: 'ACTIVE'
-        }
-      });
+      // const existing = await tx.inventory.findFirst({
+      //   where: {
+      //     batch_inventory_id: transformed.batch_inventory_id,
+      //     status: 'ACTIVE'
+      //   }
+      // });
 
-      if (existing) {
-        throw new ConflictError('An active batch already exists for this product');
-      }
+      // if (existing) {
+      //   throw new ConflictError('An active batch already exists for this product');
+      // }
 
       // 4. Create or update inventory
       const inventory = await tx.inventory.upsert({
         where: { supplier_products_id: transformed.supplier_products_id },
         create: {
           supplier_products_id: transformed.supplier_products_id,
-          batch_inventory_id: transformed.batch_inventory_id,
+          // batch_inventory_id: transformed.batch_inventory_id,
           stock_quantity: transformed.total_units,
           unit_id: transformed.unit_id,
           status: 'ACTIVE'
         },
         update: {
-          batch_inventory_id: transformed.batch_inventory_id,
+          // batch_inventory_id: transformed.batch_inventory_id,
           stock_quantity: transformed.total_units,
           status: 'ACTIVE'
         }
