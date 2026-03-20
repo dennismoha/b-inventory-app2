@@ -34,6 +34,7 @@ import Leaflet from '../feature-module/uiinterface/map/leaflet';
 import DataTables from '../feature-module/uiinterface/table/data-tables';
 import TablesBasic from '../feature-module/uiinterface/table/tables-basic';
 import Pos from '../feature-module/pos/pos';
+import { element } from 'prop-types';
 
 const ProductList = lazy(() => import('../feature-module/inventory/productlist'));
 const Dashboard = lazy(() => import('../feature-module/dashboard/Dashboard'));
@@ -165,6 +166,7 @@ const Pos2 = lazy(() => import('../feature-module/pos/pos2'));
 const Pos3 = lazy(() => import('../feature-module/pos/pos3'));
 const PosSession = lazy(() => import('../feature-module/pos/pos-session'));
 const OnlineOrder = lazy(() => import('../feature-module/sales/online-order/online-orders'));
+const CustomerReceivables = lazy(() => import('../feature-module/sales/online-order/customer-receivables'));
 const Pos4 = lazy(() => import('../feature-module/pos/pos4'));
 const Pos5 = lazy(() => import('../feature-module/pos/pos5'));
 const PosOrder = lazy(() => import('../feature-module/sales/pos-order/posOrder'));
@@ -1068,6 +1070,13 @@ export const authRoutes = [
     path: routes.onlineorder,
     name: 'online-order',
     element: <OnlineOrder />,
+    route: Route
+  },
+  {
+    id: 919,
+    path: routes.CustomerReceivables,
+    name: 'customer-receivables',
+    element: <CustomerReceivables />,
     route: Route
   },
   {

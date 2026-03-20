@@ -249,8 +249,9 @@ export const SidebarData = [
         showSubRoute: false,
         submenu: true,
         submenuItems: [
-          { label: 'sales-dashboard', link: route.onlineorder, showSubRoute: false }
-          // { label: 'POS Orders', link: route.posorder, showSubRoute: false }
+          { label: 'sales-dashboard', link: route.onlineorder, showSubRoute: false },
+          // { label: 'POS Orders', link: route.posorder, showSubRoute: false },
+          { label: 'customer-receivables', link: route.CustomerReceivables, showSubRoute: false }
         ]
       }
       // {

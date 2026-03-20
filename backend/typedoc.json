@@ -1,0 +1,9 @@
+{
+  "entryPoints": ["src"],
+  "plugin": ["typedoc-plugin-markdown"],
+  "out": "docs",
+  "tsconfig": "tsconfig.json",
+   "entryPointStrategy": "expand",
+  "excludePrivate": true,
+  "excludeProtected": false
+}

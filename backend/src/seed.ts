@@ -34,7 +34,7 @@ async function main() {
     }
   });
 
-    const category4 = await prisma.categories.upsert({
+  const category4 = await prisma.categories.upsert({
     where: { category_slug: 'chicks' },
     update: {},
     create: {
@@ -108,7 +108,7 @@ async function main() {
     }
   });
 
-    const subcategory8 = await prisma.subCategories.upsert({
+  const subcategory8 = await prisma.subCategories.upsert({
     where: { subcategory_name: 'broilers' },
     update: {},
     create: {
@@ -116,7 +116,6 @@ async function main() {
       description: 'Nutritional feed for broiler chickens to support growth and reproduction.'
     }
   });
-
 
   // Create CategorySubCategory relationships (Many-to-Many)
   await prisma.categorySubCategory.upsert({
@@ -203,7 +202,7 @@ async function main() {
     }
   });
 
-    await prisma.categorySubCategory.upsert({
+  await prisma.categorySubCategory.upsert({
     where: {
       category_id_subcategory_id: {
         category_id: category4.categoryId,
@@ -217,7 +216,7 @@ async function main() {
     }
   });
 
-      await prisma.categorySubCategory.upsert({
+  await prisma.categorySubCategory.upsert({
     where: {
       category_id_subcategory_id: {
         category_id: category4.categoryId,
@@ -230,7 +229,6 @@ async function main() {
       subcategory_id: subcategory8.subcategory_id
     }
   });
-
 
   // Create units
   const unitKg = await prisma.units.upsert({

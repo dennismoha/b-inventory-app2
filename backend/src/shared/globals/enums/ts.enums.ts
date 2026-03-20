@@ -19,7 +19,14 @@ export enum UserRoles {
 export enum PaymentMethod {
   CASH = 'cash',
   BANK = 'bank',
-  CREDIT = 'credit'
+  CREDIT = 'credit',
+  SPLIT = 'split',
+  MPESA = 'mpesa'
+}
+
+export enum SettlementStatus {
+  SETTLED = 'settled',
+  UNSETTLED = 'unsettled'
 }
 
 export type ReferenceType = 'SALE' | 'PURCHASE_PAYMENT' | 'EXPENSE' | 'CUSTOMER_PAYMENT' | 'SUPPLIER_PAYMENT' | 'ACCOUNT_TOPUP';

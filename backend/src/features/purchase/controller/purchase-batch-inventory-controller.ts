@@ -109,7 +109,7 @@ export class BatchInventoryController {
           include: {
             supplierProduct: true
           }
-        },
+        }
         // BatchInventory: true
       }
     });
@@ -134,7 +134,7 @@ export class BatchInventoryController {
           prisma.batchInventory.update({
             where: { batch_inventory_id: batchInventoryId },
             data: { status: 'INACTIVE' }
-          }),
+          })
           // prisma.inventory.updateMany({
           //   where: { batch_inventory_id: batchInventoryId },
           //   data: { status: 'INACTIVE' }
@@ -167,7 +167,7 @@ export class BatchInventoryController {
             prisma.batchInventory.update({
               where: { batch_inventory_id: batchInventoryId },
               data: { status: 'ACTIVE' }
-            }),
+            })
             // prisma.inventory.updateMany({
             //   where: { batch_inventory_id: batchInventoryId },
             //   data: { status: 'ACTIVE' }
@@ -183,7 +183,7 @@ export class BatchInventoryController {
           prisma.batchInventory.update({
             where: { batch_inventory_id: batchInventoryId },
             data: { status: 'DISCONTINUED' }
-          }),
+          })
           // prisma.inventory.updateMany({
           //   where: { batch_inventory_id: batchInventoryId },
           //   data: { status: 'DISCONTINUED' }

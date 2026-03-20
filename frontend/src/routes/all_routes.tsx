@@ -208,6 +208,7 @@ export const all_routes = {
 
   //New Page
   onlineorder: '/online-orders',
+  CustomerReceivables: '/customer-receivables',
   customer: '/customer',
   pos: '/pos',
   possession: '/pos-session',

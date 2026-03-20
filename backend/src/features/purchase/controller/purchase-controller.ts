@@ -160,7 +160,6 @@ export class PurchaseController {
       }
     });
 
-
     console.log('purchase is ', purchase);
 
     // Post-create utilities
@@ -383,7 +382,7 @@ export class PurchaseController {
   }
 
   private static async createBatchInventory(purchase: CreatePurchaseRequest & { purchase_id: string }, tx: PrismaTransactionalClient) {
-    const batchInventory = await tx.batchInventory.create({
+    await tx.batchInventory.create({
       data: {
         batch_name: purchase.batch,
         supplier_products_id: purchase.supplier_products_id,
@@ -441,7 +440,7 @@ export class PurchaseController {
     //       status: 'ACTIVE'
     //     }
     //   });
-    // }else if(supplierProdouctsId.supplier_products_id === purchase.supplier_products_id){ 
+    // }else if(supplierProdouctsId.supplier_products_id === purchase.supplier_products_id){
     //   console.log('updating inventory record for supplier product id ', purchase.supplier_products_id);
     //   await tx.inventory.update({
     //     where: { supplier_products_id: purchase.supplier_products_id },
@@ -449,8 +448,8 @@ export class PurchaseController {
     //       // batch_inventory_id: batchInventory.batch_inventory_id,
     //       stock_quantity: {
     //         increment: purchase.quantity - purchase.damaged_units
-    //       },        
-    //       status: 'ACTIVE'  
+    //       },
+    //       status: 'ACTIVE'
     //     }
     //   });
     // }
@@ -460,9 +459,7 @@ export class PurchaseController {
       create: {
         supplier_products_id: purchase.supplier_products_id,
         // batch_inventory_id: batchInventory.batch_inventory_id,
-        stock_quantity:
-          purchase.quantity - purchase.damaged_units
-        ,
+        stock_quantity: purchase.quantity - purchase.damaged_units,
         unit_id: purchase.unit_id,
         status: 'ACTIVE'
       },
@@ -474,7 +471,6 @@ export class PurchaseController {
         status: 'ACTIVE'
       }
     });
-
   }
 
   private static async logCashbookEntry(args: {

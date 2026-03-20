@@ -10,7 +10,7 @@ export interface CashBookLedger {
   transaction_date: Date;
   transaction_type: 'INFLOW' | 'OUTFLOW';
   amount: Decimal;
-  method: 'CASH' | 'BANK' | 'CREDIT' | 'CARD';
+  method: 'CASH' | 'BANK' | 'CREDIT' | 'CARD' | 'SPLIT' | 'MPESA';
   reference_type: ReferenceType;
   reference_id?: string | null;
   balance_after: Decimal | null;

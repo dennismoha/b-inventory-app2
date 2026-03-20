@@ -415,9 +415,23 @@ model Transaction {
   CustomerReceivable CustomerReceivable?
   // Optional: Indexes for faster querying
   Sales              Sales[]
+    CustomerSplitPayment   CustomerSplitPayment[] @relation("TransactionToSplitPayments")
 
   @@index([customerId])
 }
+
+model CustomerSplitPayment {
+  customer_receivable_id      String   @id @default(uuid())
+  transaction_id     String        
+  amount_paid        Decimal       @db.Decimal(12, 2)
+  paymentType     PaymentMethod
+  reference      String?       // e.g., receipt number, transaction reference
+  payment_date       DateTime      @default(now())
+  status             PayableStatus @default(settled)
+  
+  Transaction Transaction @relation("TransactionToSplitPayments", fields: [transaction_id], references: [transactionId])
+}
+
 
 model Sales {
   SalesId              String           @id @default(uuid())
@@ -441,26 +455,7 @@ model Sales {
   transaction          Transaction      @relation(fields: [transactionId], references: [transactionId])
 }
 
-// 1. Batch Table - Master record for incoming goods
-// model Batch {
-//   batch_id     String    @id @default(uuid()) @db.Uuid
-//   arrival_date DateTime
-//   supplier_id  String    @db.Uuid
-//   product_id   String    @db.Uuid
-//   created_at   DateTime  @default(now())
-//   updated_at   DateTime  @updatedAt
 
-//   supplier     Suppliers @relation(fields: [supplier_id], references: [supplier_id])
-//   product      SupplierProducts  @relation(fields: [product_id], references: [supplier_products_id])
-
-//   purchases       Purchase[]
-//   purchaseExpenses PurchaseExpense[]
-//   purchaseDamages PurchaseDamage[]
-//   batchInventory  BatchInventory?
-//   batchPayables   BatchPayables?
-
-//   @@map("Batch")
-// }
 
 // 2. Purchases Table - Purchase details linked to batch
 model Purchase {
@@ -524,24 +519,6 @@ model Expense {
   ExpenseAccounts Account  @relation(fields: [accountId], references: [account_id])
 }
 
-// model Expense {
-//   id              String    @id @default(uuid())
-//   description     String
-//   amount         Decimal  @db.Decimal(14,2)
-//   category        ExpenseCategory    // e.g., "Transport", "Import Duty", "General", etc.
-//   expenseDate     DateTime  @default(now())
-//   paymentMethod PaymentMethod
-//   accountId       String @db.Uuid
-//   referenceNo   String?   // e.g., receipt number, invoice number
-//   vendor        String?   // who you paid
-//   // Link to Purchase (optional)
-//   purchaseId      String?   @db.Uuid
-//   // purchase        Purchase? @relation(fields: [purchaseId], references: [purchase_id], onDelete: Cascade)
-
-//   createdAt       DateTime  @default(now())
-//   updatedAt       DateTime  @updatedAt
-//   ExpenseAccounts Account @relation(fields: [accountId], references: [account_id])
-// }
 
 //all products in our system from purchase , total will be stored here. 
 model ProductSummary {
@@ -1010,6 +987,8 @@ enum PaymentMethod {
   BANK
   CREDIT
   CARD
+  SPLIT
+  MPESA
 }
 
 enum OrderStatus {

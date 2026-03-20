@@ -8,7 +8,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 // Enum helpers (keep aligned with your Prisma enums)
 export type PaymentType = 'full' | 'partial' | 'credit' | 'full_split';
 export type PaymentStatus = 'paid' | 'partially_paid' | 'unpaid';
-export type PaymentMethod = 'CASH' | 'CARD' | 'BANK' | 'CREDIT';
+export type PaymentMethod = 'CASH' | 'CARD' | 'BANK' | 'CREDIT' | 'SPLIT' | 'MPESA';
 export type TransactionType = {
   INFLOW: 'INFLOW';
   OUTFLOW: 'OUTFLOW';

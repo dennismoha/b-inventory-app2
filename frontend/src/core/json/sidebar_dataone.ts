@@ -457,6 +457,13 @@ export const SidebarData1 = [
                 subRoutes: []
               },
               {
+                tittle: 'customer-receivables',
+                hasSubRoute: false,
+                showSubRoute: false,
+                route: '/customer-receivables',
+                subRoutes: []
+              },
+              {
                 tittle: 'POS Orders',
                 hasSubRoute: false,
                 showSubRoute: false,

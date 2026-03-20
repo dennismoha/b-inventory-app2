@@ -16,6 +16,7 @@ class TransactionRoutes {
     // this.router.delete('/transactions/:transactionId', TransactionsController.prototype.deleteTransaction);
     this.router.get('/transactions', TransactionsController.prototype.fetchTransactions);
     this.router.get('/transactions/customer/receivables', TransactionsController.prototype.getCustomerReceivables);
+    this.router.post('/transactions/customer-receivables/settle', TransactionsController.prototype.handleCustomerReceivablePayment);
 
     return this.router;
   }
