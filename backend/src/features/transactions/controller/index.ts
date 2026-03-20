@@ -480,13 +480,6 @@ export class TransactionsController {
 
   static async handleSplitPayment(tx: PrismaTransactionalClient, customerId: string, payments: TransactionPayments[], transactionId: string, totalCost: number): Promise<number> {
 
-
-    console.log('handling split payment for transaction ', transactionId, ' with total cost ', totalCost);
-    console.log('handle split payment payload is ', payments);
-    console.log('payments is ', payments, ' payment methods is ', ' amount paid is ', totalCost);
-
-
-
     const paymentData = payments.map((p) => ({
       transaction_id: transactionId,
       paymentType: p.paymentType,
@@ -499,22 +492,46 @@ export class TransactionsController {
 
     const isCreditTransaction = payments.some(p => p.paymentType === 'CREDIT');
 
-    console.log('is credit transaction ', isCreditTransaction);
-    console.log('customer id is ', customerId, ' transaction id is ', transactionId, ' total cost is ', totalCost);
-
     if (isCreditTransaction) {
-      console.log('creating customer receivable for credit portion of split payment');
-     await tx.customerReceivable.create({
+      await tx.customerReceivable.create({
         data: {
           customer_id: customerId,
           total_Amount: money(totalCost),
           total_paid: new Decimal(payments.reduce((sum, p) => sum + (p.paymentType === 'CREDIT' ? 0 : p.amount), 0)),
           transaction_id: transactionId,
-          balance_due: new Decimal(totalCost - payments.reduce((sum, p) => sum + (p.paymentType === 'CREDIT' ? 0: p.amount), 0))
+          balance_due: new Decimal(totalCost - payments.reduce((sum, p) => sum + (p.paymentType === 'CREDIT' ? 0 : p.amount), 0))
         }
       });
 
     }
+
+    console.log('WE ARE IN THE   ACCOUNTing section ');
+    const inventoryAccount = await AccountController.findAccount({
+      tx,
+      name: Account_Inventory.name,
+      type: Account_Inventory.acc_type
+    });
+    const BankAccount = await AccountController.findAccount({ tx, name: Account_Bank.name, type: Account_Bank.acc_type });
+    if (!inventoryAccount && !BankAccount) {
+      throw new BadRequestError('Account not configured');
+    }
+    console.log('inventory account is ', inventoryAccount);
+    const cashAmount = new Decimal(payments.reduce((sum, p) => sum + (p.paymentType === 'CREDIT' ? 0 : p.amount), 0));
+
+    await JournalService.createJournalEntry(tx, {
+      transactionId: 'new split transaction payment',
+      description: 'split transaction payment',
+      lines: [
+        {
+          account_id: inventoryAccount.account_id!,
+          credit: new Decimal(cashAmount)
+        },
+        {
+          account_id: BankAccount.account_id,
+          debit: new Decimal(cashAmount)
+        }
+      ]
+    });
 
     return totalCost;
 
