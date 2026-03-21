@@ -20,7 +20,7 @@ import crypto from 'crypto';
 import { BadRequestError } from '@src/shared/globals/helpers/error-handler';
 import { Decimal } from '@prisma/client/runtime/library';
 import { AccountController } from '@src/features/accounting/controller/accounts-controller';
-import { Account_Bank, Account_Inventory } from '@src/constants';
+import { Account_Bank, Account_Inventory, Account_Receivable } from '@src/constants';
 import { JournalService } from '@src/features/accounting/controller/journals-controller';
 import { SettlementStatus } from '@src/shared/globals/enums/ts.enums';
 
@@ -425,8 +425,41 @@ export class TransactionsController {
           payment_status: newPaymentStatus
         }
       });
+
+
+      console.log('WE ARE IN THE   ACCOUNTing section ');
+      const ReceivableAccount = await AccountController.findAccount({
+        tx,
+        name: Account_Receivable.name,
+        type: Account_Receivable.acc_type
+      });
+      const BankAccount = await AccountController.findAccount({ tx, name: Account_Bank.name, type: Account_Bank.acc_type });
+      if (!ReceivableAccount && !BankAccount) {
+        throw new BadRequestError('Account not configured');
+      }
+      console.log('inventory account is ', ReceivableAccount);
+     
+
+      await JournalService.createJournalEntry(tx, {
+        transactionId: transactionId,
+        description: 'split transaction payment',
+        lines: [
+          {
+            account_id: ReceivableAccount.account_id!,
+            credit: new Decimal(newTotalPaid)
+          },
+          {
+            account_id: BankAccount.account_id,
+            debit: new Decimal(newTotalPaid)
+          }
+        ]
+      });
+
+
       return updatedReceivable;
     });
+
+
 
     // const message = utilMessage.updated('customer receivable');
     // res.json({ message, updatedReceivable });
@@ -519,7 +552,7 @@ export class TransactionsController {
     const cashAmount = new Decimal(payments.reduce((sum, p) => sum + (p.paymentType === 'CREDIT' ? 0 : p.amount), 0));
 
     await JournalService.createJournalEntry(tx, {
-      transactionId: 'new split transaction payment',
+      transactionId: transactionId,
       description: 'split transaction payment',
       lines: [
         {

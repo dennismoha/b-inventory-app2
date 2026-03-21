@@ -126,9 +126,9 @@ export class AccountController {
    */
   @joiValidation(accountSchema)
   public async createAccount(req: Request, res: Response): Promise<Response> {
-    const { name, type, account_number, balance } = req.body;
+    const { name, type, account_number, opening_balance, running_balance } = req.body;
     console.log('Creating account with data:', req.body);
-    const opening_balance = balance;
+    console.log('account balance is ', running_balance);
 
     // Check if account with the same name exists (active only)
     const existingAccount = await prisma.account.findFirst({
@@ -145,7 +145,7 @@ export class AccountController {
         type,
         // description,
         opening_balance,
-        running_balance: balance,
+        running_balance: running_balance,
         deleted: false, // Ensure new accounts are not marked as deleted
         account_status: 'ACTIVE' // Default status for new accounts
       }
@@ -162,10 +162,7 @@ export class AccountController {
 
     return res.status(StatusCodes.CREATED).send(GetSuccessMessage(201, account, 'account created succesfully'));
 
-    // json({
-    //   message: 'Account created successfully',
-    //   data: account
-    // });
+
   }
 
   /**

@@ -49,6 +49,12 @@ export const Account_Rent: AcccountsStructure = {
   acc_type: 'EXPENSE'
 };
 
+export const Account_Receivable: AcccountsStructure = {
+  name: 'Accounts Receivable',
+  acc_type: 'ASSET'
+};
+
+
 export const Account_Utilities: AcccountsStructure = {
   name: 'Utilities Expense',
   acc_type: 'EXPENSE'
