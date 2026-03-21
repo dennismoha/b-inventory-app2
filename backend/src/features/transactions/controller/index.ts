@@ -227,6 +227,36 @@ export class TransactionsController {
             balance_due: money(totalCost.total)
           }
         });
+
+        console.log('WE ARE IN THE   ACCOUNTing section ');
+        const ReceivableAccount = await AccountController.findAccount({
+          tx,
+          name: Account_Receivable.name,
+          type: Account_Receivable.acc_type
+        });
+        const InventoryAccount = await AccountController.findAccount({ tx, name: Account_Inventory.name, type: Account_Inventory.acc_type });
+        if (!ReceivableAccount && !InventoryAccount) {
+          throw new BadRequestError('Account not configured');
+        }
+        console.log('inventory account is ', ReceivableAccount);
+
+
+        await JournalService.createJournalEntry(tx, {
+          transactionId: transactionId,
+          description: 'split transaction payment',
+          lines: [
+            {
+              account_id: InventoryAccount.account_id!,
+              credit: new Decimal(totalCost.total)
+            },
+            {
+              account_id: ReceivableAccount.account_id,
+              debit: new Decimal(totalCost.total)
+            }
+          ]
+        });
+
+
       } else if (paymentMethod === 'SPLIT') {
         /**
          * this is where logic for split payment will be handled. we will need to receive from the frontend how much of the total is being paid by each method, then we can create journal entries for each payment method accordingly. for example, if part is paid by cash and part by credit, we would create a journal entry that debits cash and accounts receivable, and credits sales revenue. we would also need to update the customer receivable record if there is a credit portion. this requires more complex handling on both the frontend and backend to ensure all payment details are captured correctly.
@@ -438,7 +468,7 @@ export class TransactionsController {
         throw new BadRequestError('Account not configured');
       }
       console.log('inventory account is ', ReceivableAccount);
-     
+
 
       await JournalService.createJournalEntry(tx, {
         transactionId: transactionId,
@@ -525,6 +555,28 @@ export class TransactionsController {
 
     const isCreditTransaction = payments.some(p => p.paymentType === 'CREDIT');
 
+
+    console.log('WE ARE IN THE   ACCOUNTing section ');
+    const inventoryAccount = await AccountController.findAccount({
+      tx,
+      name: Account_Inventory.name,
+      type: Account_Inventory.acc_type
+    });
+    const BankAccount = await AccountController.findAccount({ tx, name: Account_Bank.name, type: Account_Bank.acc_type });
+    const ReceivableAccount = await AccountController.findAccount({
+      tx,
+      name: Account_Receivable.name,
+      type: Account_Receivable.acc_type
+    });
+
+    if (!inventoryAccount && !BankAccount && !ReceivableAccount) {
+      throw new BadRequestError('Account not configured');
+    }
+    console.log('inventory account is ', inventoryAccount);
+    const cashAmount = new Decimal(payments.reduce((sum, p) => sum + (p.paymentType === 'CREDIT' ? 0 : p.amount), 0));
+    const creditCashAmount = new Decimal(payments.reduce((sum, p) => sum + (p.paymentType === 'CREDIT' ? p.amount : 0), 0));
+console.log('cash amount is ', cashAmount);
+console.log('credit cash amount is ', creditCashAmount);
     if (isCreditTransaction) {
       await tx.customerReceivable.create({
         data: {
@@ -536,20 +588,23 @@ export class TransactionsController {
         }
       });
 
-    }
+      await JournalService.createJournalEntry(tx, {
+        transactionId: transactionId,
+        description: 'split transaction payment',
+        lines: [
+          {
+            account_id: inventoryAccount.account_id!,
+            credit: new Decimal(creditCashAmount)
+          },
+          {
+            account_id: ReceivableAccount.account_id,
+            debit: new Decimal(creditCashAmount)
+          }
+        ]
+      });
 
-    console.log('WE ARE IN THE   ACCOUNTing section ');
-    const inventoryAccount = await AccountController.findAccount({
-      tx,
-      name: Account_Inventory.name,
-      type: Account_Inventory.acc_type
-    });
-    const BankAccount = await AccountController.findAccount({ tx, name: Account_Bank.name, type: Account_Bank.acc_type });
-    if (!inventoryAccount && !BankAccount) {
-      throw new BadRequestError('Account not configured');
+
     }
-    console.log('inventory account is ', inventoryAccount);
-    const cashAmount = new Decimal(payments.reduce((sum, p) => sum + (p.paymentType === 'CREDIT' ? 0 : p.amount), 0));
 
     await JournalService.createJournalEntry(tx, {
       transactionId: transactionId,

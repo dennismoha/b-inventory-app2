@@ -187,76 +187,6 @@ export class PurchaseController {
     return purchase;
   }
 
-  // private static async handlePartialPayment(data: CreatePurchaseRequest, undamaged_units: number, tx: PrismaTransactionalClient) {
-  //     // Validate payments present
-  //     if (!Array.isArray(data.payments) || data.payments.length === 0) {
-  //         throw new Error('At least one partial payment is required.');
-  //     }
-  //     // Sum & check equals total
-  //     const totalPaid = data.payments.reduce((s: number, p: any) => s + Number(p.amount_paid), 0);
-  //     if (Number(totalPaid.toFixed(2)) !== Number(Number(data.total_purchase_cost).toFixed(2))) {
-  //         throw new Error('Total partial payments do not match the total purchase cost.');
-  //     }
-
-  //     // Create Purchase
-  //     const purchase = await tx.purchase.create({
-  //         data: {
-  //             batch: data.batch,
-  //             supplier_products_id: data.supplier_products_id,
-  //             quantity: data.quantity,
-  //             damaged_units: data.damaged_units,
-  //             reason_for_damage: data.reason_for_damage ?? null,
-  //             undamaged_units,
-  //             unit_id: data.unit_id,
-  //             purchase_cost_per_unit: data.purchase_cost_per_unit,
-  //             total_purchase_cost: data.total_purchase_cost,
-  //             discounts: data.discounts,
-  //             tax: data.tax,
-  //             payment_type: 'partial',
-  //             payment_method: data.payment_method, // split legs carry their own method
-  //             payment_status: 'paid', // because your pseudocode: fully equals total => paid
-  //             payment_date: new Date(),
-  //             account_id: null,
-  //             payment_reference: data.payment_reference ?? null,
-  //             arrival_date: data.arrival_date
-  //         }
-  //     });
-
-  //     // Post-create utilities
-  //     await this.recordDamageIfAny(purchase, tx);
-  //     await this.createBatchInventory(purchase, tx);
-
-  //     // Create payment legs + cashbook entries
-  //     for (const leg of data.payments) {
-  //         if (!leg.account_id) throw new Error('account_id is required on each partial payment leg');
-  //         if (!leg.payment_method) throw new Error('payment_method is required on each partial payment leg');
-
-  //         await tx.purchasePayment.create({
-  //             data: {
-  //                 purchase_id: purchase.purchase_id,
-  //                 account_id: leg.account_id,
-  //                 amount_paid: leg.amount_paid,
-  //                 payment_method: leg.payment_method,
-  //                 payment_reference: leg.payment_reference ?? null,
-  //                 payment_date: leg.payment_date ? new Date(leg.payment_date) : new Date()
-  //             }
-  //         });
-
-  // should also be sent to batchPayables. that is total -what is paid. what is left is debt.
-
-  //         await this.logCashbookEntry({
-  //             tx,
-  //             purchase,
-  //             account_id: leg.account_id,
-  //             amount: leg.amount_paid,
-  //             payment_method: leg.payment_method,
-  //             payment_reference: leg.payment_reference
-  //         });
-  //     }
-
-  //     // No payables since fully covered by partial legs
-  //     return purchase;
-  // }
 
   private static async handleCreditPayment(data: CreatePurchaseRequest, undamaged_units: number, tx: PrismaTransactionalClient) {
     // Create Purchase
@@ -303,68 +233,7 @@ export class PurchaseController {
     return purchase;
   }
 
-  // private static async handleFullSplitPayment(data: CreatePurchaseRequest, undamaged_units: number, tx: PrismaTransactionalClient) {
-  //     if (!Array.isArray(data.payments) || data.payments.length === 0) {
-  //         throw new Error('At least one split payment is required.');
-  //     }
-  //     const totalSplit = data.payments.reduce((s: number, p: any) => s + Number(p.amount_paid), 0);
-  //     if (Number(totalSplit.toFixed(2)) !== Number(Number(data.total_purchase_cost).toFixed(2))) {
-  //         throw new Error('Total split payments do not match the total purchase cost.');
-  //     }
 
-  //     const purchase = await tx.purchase.create({
-  //         data: {
-  //             batch: data.batch,
-  //             supplier_products_id: data.supplier_products_id,
-  //             quantity: data.quantity,
-  //             damaged_units: data.damaged_units,
-  //             reason_for_damage: data.reason_for_damage ?? null,
-  //             undamaged_units,
-  //             unit_id: data.unit_id,
-  //             purchase_cost_per_unit: data.purchase_cost_per_unit,
-  //             total_purchase_cost: data.total_purchase_cost,
-  //             discounts: data.discounts,
-  //             tax: data.tax,
-  //             payment_type: 'full_split',
-  //             payment_method: null,
-  //             payment_status: 'paid',
-  //             payment_date: new Date(),
-  //             account_id: null,
-  //             payment_reference: data.payment_reference ?? null,
-  //             arrival_date: data.arrival_date
-  //         }
-  //     });
-
-  //     await this.recordDamageIfAny(purchase, tx);
-  //     await this.createBatchInventory(purchase, tx);
-
-  //     for (const leg of data.payments) {
-  //         if (!leg.account_id) throw new Error('account_id is required on each split payment leg');
-  //         if (!leg.payment_method) throw new Error('payment_method is required on each split payment leg');
-
-  //         await tx.purchasePayment.create({
-  //             data: {
-  //                 purchase_id: purchase.purchase_id,
-  //                 account_id: leg.account_id,
-  //                 amount_paid: leg.amount_paid,
-  //                 payment_method: leg.payment_method,
-  //                 payment_reference: leg.payment_reference ?? null,
-  //                 payment_date: leg.payment_date ? new Date(leg.payment_date) : new Date()
-  //             }
-  //         });
-
-  //         await this.logCashbookEntry({
-  //             tx,
-  //             purchase,
-  //             account_id: leg.account_id,
-  //             amount: leg.amount_paid,
-  //             payment_method: leg.payment_method,
-  //             payment_reference: leg.payment_reference
-  //         });
-  //     }
-
-  //     return purchase;
-  // }
 
   // ========== Utilities ==========
 
@@ -414,45 +283,7 @@ export class PurchaseController {
       }
     });
 
-    // in the inventory select all where supplier product id is the same as purchase.supplierproductsid
-
-    // const supplierProdouctsId = await tx.supplierProducts.findUnique({
-    //   where: {
-    //     supplier_products_id: purchase.supplier_products_id
-    //   },
-    //   select: {
-    //     supplier_products_id: true,
-    //     product: true,
-    //     supplier: true
-    //   }
-    // });
-
-    // console.log('supplier product id is ', supplierProdouctsId ,' \n and purchase supplier product id is ', purchase.supplier_products_id);
-
-    // if(!supplierProdouctsId?.supplier_products_id){
-    //   console.log('creating inventory record for supplier product id ', purchase.supplier_products_id);
-    //   await tx.inventory.create({
-    //     data: {
-    //       supplier_products_id: purchase.supplier_products_id,
-    //       // batch_inventory_id: batchInventory.batch_inventory_id,
-    //       stock_quantity: purchase.quantity - purchase.damaged_units,
-    //       unit_id: purchase.unit_id,
-    //       status: 'ACTIVE'
-    //     }
-    //   });
-    // }else if(supplierProdouctsId.supplier_products_id === purchase.supplier_products_id){
-    //   console.log('updating inventory record for supplier product id ', purchase.supplier_products_id);
-    //   await tx.inventory.update({
-    //     where: { supplier_products_id: purchase.supplier_products_id },
-    //     data: {
-    //       // batch_inventory_id: batchInventory.batch_inventory_id,
-    //       stock_quantity: {
-    //         increment: purchase.quantity - purchase.damaged_units
-    //       },
-    //       status: 'ACTIVE'
-    //     }
-    //   });
-    // }
+  
 
     await tx.inventory.upsert({
       where: { supplier_products_id: purchase.supplier_products_id },
@@ -1037,25 +868,6 @@ export class PurchaseController {
     });
   }
 
-  // private async deleteJournalEntries(purchase_id: string, tx: PrismaTransactionalClient) {
-  //   // Delete all journal entries related to this purchase
-  //     const journalEntry = await JournalService.createJournalEntry(tx, {
-  //       transactionId: 'purchase_payment',
-  //       description: 'purchase payment',
-  //       lines: [
-  //         {
-  //           account_id: data.account_id!,
-  //           credit: data.total_purchase_cost
-  //         },
-  //         {
-  //           account_id: inventoryAccount.account_id,
-  //           debit: data.total_purchase_cost
-  //         }
-  //       ]
-  //     });
-
-  // }
-
   // PaymentService.ts
 
   public async updatePaymentType(req: Request, res: Response) {
@@ -1290,56 +1102,5 @@ export class PurchaseController {
     return { message: 'Payment type updated from full to credit', purchase: updatedPurchase };
   }
 
-  // =======================================================
-  // CREDIT → PARTIAL (for completeness)
-  // =======================================================
-  // static async handlePartialPaymentTypeUpdate(tx: PrismaTransactionalClient, payload: any) {
-  //   const payable = await tx.batchPayables.findUnique({
-  //     where: { purchase_id: payload.purchase_id },
-  //   });
 
-  //   if (!payable) {
-  //     throw new BadRequestError('Batch payable not found for this purchase');
-  //   }
-
-  //   const now = new Date();
-
-  //   const { partialPaymentAmount } = payload;
-
-  //   if (partialPaymentAmount <= 0 || partialPaymentAmount > Number(payable.amount_due)) {
-  //     throw new BadRequestError('Invalid partial payment amount');
-  //   }
-
-  //   await tx.batchPayables.update({
-  //     where: { purchase_id: purchase.purchase_id },
-  //     data: {
-  //       payment_type: 'partial',
-  //       total_paid: partialPaymentAmount,
-  //       balance_due: Number(payable.amount_due) - partialPaymentAmount,
-  //       status: partialPaymentAmount === Number(payable.amount_due) ? 'paid' : 'partially_paid',
-  //       settlement_date: partialPaymentAmount === Number(payable.amount_due) ? now : null,
-  //       updated_at: now,
-  //     },
-  //   });
-
-  //   const updatedPurchase = await tx.purchase.update({
-  //     where: { purchase_id: purchase.purchase_id },
-  //     data: {
-  //       payment_type: 'partial',
-  //       payment_status: partialPaymentAmount === Number(payable.amount_due) ? 'paid' : 'partially_paid',
-  //       payment_date: now,
-  //       updated_at: now,
-  //     },
-  //   });
-
-  //   await JournalService.createJournalEntry(tx, {
-  //     type: 'PartialPayment',
-  //     debitAccount: 'Inventory',
-  //     creditAccount: 'Bank',
-  //     amount: partialPaymentAmount,
-  //     description: `Partial payment made for batch ${purchase.batch}`,
-  //   });
-
-  //   return { message: 'Payment type updated from credit to partial', purchase: updatedPurchase };
-  // }
 }
