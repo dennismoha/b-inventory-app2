@@ -5,7 +5,9 @@ import { NotAuthorizedError } from './error-handler';
 type Role = 'user' | 'admin'; // extend this if you add more roles later
 
 export const verifyAuthRoles = (...allowedRoles: Role[]) => {
+
   return (req: Request, res: Response, next: NextFunction) => {
+    console.log('allowed roles', allowedRoles);
     if (!req?.currentUser?.role) {
       return res.sendStatus(401); // Unauthorized
     }
